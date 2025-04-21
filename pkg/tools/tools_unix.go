@@ -17,19 +17,10 @@ import "C"
 
 import (
 	"fmt"
+	"golang.org/x/sys/unix"
 	"syscall"
 	"time"
-	"unsafe"
 )
-
-const (
-	_SysSchedSetAffinity = 203
-	_CPUSetSize          = 1024
-)
-
-type _CPUSet struct {
-	bits [_CPUSetSize / 64]uint64
-}
 
 func GetTickCount64() uint64 {
 	return uint64(time.Now().UnixMilli())
@@ -38,18 +29,13 @@ func GetTickCount64() uint64 {
 func SetThreadAffinity(idx int) error {
 
 	var (
-		cpuSet _CPUSet
-		err    syscall.Errno
+		err error
 	)
 
-	cpuSet.bits[idx/64] |= 1 << (uint(idx) % 64)
+	target := unix.CPUSet{}
+	target.Set(idx)
 
-	if _, _, err = syscall.Syscall(
-		_SysSchedSetAffinity,
-		uintptr(syscall.Gettid()),
-		uintptr(unsafe.Sizeof(cpuSet)),
-		uintptr(unsafe.Pointer(&cpuSet)),
-	); err != 0 {
+	if err = unix.SchedSetaffinity(syscall.Gettid(), &target); err != nil {
 		return err
 	}
 
