@@ -23,7 +23,7 @@ func init() {
 	StaticCommand.PersistentFlags().Float64VarP(&staticLoad, "static-load", "l", 0.7, "")
 	CalcCommand.PersistentFlags().Int64VarP(&calcLoad, "calc-load", "c", 1000, "")
 	Command.PersistentFlags().IntSliceVar(&targetCPUs, "cpu", []int{1}, "")
-	Command.PersistentFlags().BoolVarP(&rt, "real-time", "rt", false, "")
+	Command.PersistentFlags().BoolVar(&rt, "real-time", false, "")
 	Command.PersistentFlags().BoolVarP(&all, "all", "a", false, "")
 	Command.AddCommand(StaticCommand)
 	Command.AddCommand(CalcCommand)
