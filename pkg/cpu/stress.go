@@ -42,7 +42,7 @@ func StressAllCore(ctx context.Context, load func(), targetCPUs []int, rt bool) 
 	var wg sync.WaitGroup
 
 	for _, t := range targetCPUs {
-		if t > numCPUs {
+		if t >= numCPUs {
 			log.Warnf("CPU<%d> is not found", t)
 			continue
 		}
