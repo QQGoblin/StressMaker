@@ -34,3 +34,7 @@ func SetThreadAffinity(idx int) error {
 
 	return nil
 }
+
+func SetRealtimeScheduling() error {
+	return nil
+}

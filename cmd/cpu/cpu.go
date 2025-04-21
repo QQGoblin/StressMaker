@@ -15,6 +15,7 @@ var (
 	staticLoad float64
 	calcLoad   int64
 	targetCPUs []int
+	rt         bool
 	all        bool
 )
 
@@ -22,6 +23,7 @@ func init() {
 	StaticCommand.PersistentFlags().Float64VarP(&staticLoad, "static-load", "l", 0.7, "")
 	CalcCommand.PersistentFlags().Int64VarP(&calcLoad, "calc-load", "c", 1000, "")
 	Command.PersistentFlags().IntSliceVar(&targetCPUs, "cpu", []int{1}, "")
+	Command.PersistentFlags().BoolVarP(&rt, "real-time", "rt", false, "")
 	Command.PersistentFlags().BoolVarP(&all, "all", "a", false, "")
 	Command.AddCommand(StaticCommand)
 	Command.AddCommand(CalcCommand)
@@ -62,7 +64,7 @@ var StaticCommand = &cobra.Command{
 			targetCPUs = bindAllCPUs()
 		}
 
-		cpustress.StaticStress(ctx, staticLoad, targetCPUs)
+		cpustress.StaticStress(ctx, staticLoad, targetCPUs, rt)
 
 		return nil
 	},
@@ -88,7 +90,7 @@ var CalcCommand = &cobra.Command{
 			targetCPUs = bindAllCPUs()
 		}
 
-		cpustress.CalcStress(ctx, calcLoad, targetCPUs)
+		cpustress.CalcStress(ctx, calcLoad, targetCPUs, rt)
 
 		return nil
 	},

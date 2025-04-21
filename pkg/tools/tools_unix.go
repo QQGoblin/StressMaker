@@ -2,7 +2,21 @@
 
 package tools
 
+/*
+#include <sched.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int set_realtime_scheduling(pid_t pid) {
+    struct sched_param param;
+    param.sched_priority = 99;
+    return sched_setscheduler(pid, SCHED_FIFO, &param);
+}
+*/
+import "C"
+
 import (
+	"fmt"
 	"syscall"
 	"time"
 	"unsafe"
@@ -39,5 +53,12 @@ func SetThreadAffinity(idx int) error {
 		return err
 	}
 
+	return nil
+}
+
+func SetRealtimeScheduling() error {
+	if ret := C.set_realtime_scheduling(C.getpid()); ret != 0 {
+		return fmt.Errorf("failed to set realtime scheduling, ret %v", ret)
+	}
 	return nil
 }

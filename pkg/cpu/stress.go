@@ -30,7 +30,13 @@ func StressOneCore(ctx context.Context, idx int, load func()) error {
 	}
 }
 
-func StressAllCore(ctx context.Context, load func(), targetCPUs []int) {
+func StressAllCore(ctx context.Context, load func(), targetCPUs []int, rt bool) {
+
+	if rt {
+		if err := tools.SetRealtimeScheduling(); err != nil {
+			log.WithError(err).Fatal("Set process real-time scheduling")
+		}
+	}
 
 	numCPUs := runtime.NumCPU()
 	var wg sync.WaitGroup
@@ -53,7 +59,7 @@ func StressAllCore(ctx context.Context, load func(), targetCPUs []int) {
 }
 
 // StaticStress 产生恒定负载，使 CPU 使用率控制特定百分比
-func StaticStress(ctx context.Context, load float64, targetCPUs []int) {
+func StaticStress(ctx context.Context, load float64, targetCPUs []int, rt bool) {
 	loadInMillSecond := uint64(load * 1000)
 
 	if loadInMillSecond > 990 {
@@ -68,11 +74,11 @@ func StaticStress(ctx context.Context, load float64, targetCPUs []int) {
 		}
 
 		time.Sleep(time.Duration(1000-loadInMillSecond) * time.Millisecond)
-	}, targetCPUs)
+	}, targetCPUs, rt)
 }
 
 // CalcStress 指定四则运算负载
-func CalcStress(ctx context.Context, loop int64, targetCPUs []int) {
+func CalcStress(ctx context.Context, loop int64, targetCPUs []int, rt bool) {
 
 	log.Infof("CPU loop %v\n", loop)
 
@@ -86,5 +92,5 @@ func CalcStress(ctx context.Context, loop int64, targetCPUs []int) {
 		if cost < 1000 {
 			time.Sleep(time.Duration(1000-cost) * time.Millisecond)
 		}
-	}, targetCPUs)
+	}, targetCPUs, rt)
 }
