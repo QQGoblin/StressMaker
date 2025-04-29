@@ -1,3 +1,5 @@
+//go:build aix || freebsd || linux || netbsd
+
 package freq
 
 import (
@@ -47,6 +49,7 @@ func OnlineCPUs(selectCPUs []string, online bool) error {
 			continue
 		}
 
+		log.Infof("Change CPU%d", cpu)
 		if err = onlineCPU(cpu, online); err != nil {
 			return err
 		}

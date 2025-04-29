@@ -18,6 +18,10 @@ import "C"
 import (
 	"fmt"
 	"golang.org/x/sys/unix"
+	"k8s.io/apimachinery/pkg/util/sets"
+	"os"
+	"strconv"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -47,4 +51,69 @@ func SetRealtimeScheduling() error {
 		return fmt.Errorf("failed to set realtime scheduling, ret %v", ret)
 	}
 	return nil
+}
+
+func CPUNum() (int, error) {
+
+	var (
+		err    error
+		files  []os.DirEntry
+		result int
+	)
+
+	if files, err = os.ReadDir("/sys/devices/system/cpu/"); err != nil {
+		return 0, err
+	}
+
+	for _, file := range files {
+		if strings.HasPrefix(file.Name(), "cpu") {
+			if _, err = strconv.Atoi(file.Name()[3:]); err == nil {
+				result++
+			}
+		}
+	}
+	return result, nil
+}
+
+func ParseCPUs(sel []string) ([]int, error) {
+
+	var (
+		result   = sets.NewInt()
+		totalCPU int
+		err      error
+	)
+
+	if totalCPU, err = CPUNum(); err != nil {
+		return nil, err
+	}
+
+	for _, s := range sel {
+		var (
+			cpuBegin, cpuEnd int
+			sd               = strings.Split(s, "-")
+		)
+
+		if len(sd) == 0 || len(sd) > 2 {
+			return nil, fmt.Errorf("error cpu select %v", s)
+		}
+
+		if cpuBegin, err = strconv.Atoi(sd[0]); err != nil {
+			return nil, err
+		}
+
+		cpuEnd = cpuBegin
+
+		if len(sd) == 2 {
+			if cpuEnd, err = strconv.Atoi(sd[1]); err != nil {
+				return nil, err
+			}
+		}
+
+		for cpu := cpuBegin; cpu < cpuEnd+1; cpu += 1 {
+			if totalCPU > cpu {
+				result.Insert(cpu)
+			}
+		}
+	}
+	return result.List(), nil
 }

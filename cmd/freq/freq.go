@@ -11,7 +11,7 @@ var (
 )
 
 func init() {
-	Command.PersistentFlags().StringSliceVarP(&selectCPUs, "cpu", "c", []string{"1"}, "")
+	Command.PersistentFlags().StringSliceVarP(&selectCPUs, "cpu", "c", []string{"2"}, "")
 	onlineCommand.PersistentFlags().BoolVarP(&offlineCPU, "offline", "s", false, "")
 	Command.AddCommand(onlineCommand)
 }
