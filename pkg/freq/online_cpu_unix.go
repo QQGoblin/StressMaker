@@ -44,8 +44,8 @@ func OnlineCPUs(selectCPUs []string, online bool) error {
 
 	for _, cpu := range target {
 
-		if (cpu == 0 || cpu == 1) && !online {
-			log.Warn("Never offline CPU0 or CPU1")
+		if cpu == 0 {
+			log.Warn("Never Change CPU0")
 			continue
 		}
 
