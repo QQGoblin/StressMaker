@@ -2,6 +2,7 @@ package main
 
 import (
 	cpustress "github.com/QQGoblin/StressMaker/cmd/cpu"
+	"github.com/QQGoblin/StressMaker/cmd/freq"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -13,6 +14,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(cpustress.Command)
+	rootCmd.AddCommand(freq.Command)
 	rootCmd.Root().CompletionOptions.DisableDefaultCmd = true
 }
 
