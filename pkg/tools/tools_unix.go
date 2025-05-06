@@ -117,3 +117,7 @@ func ParseCPUs(sel []string) ([]int, error) {
 	}
 	return result.List(), nil
 }
+
+func GetWindowsByProcess(targetPID uint32) ([]string, error) {
+	panic("UnSupport on Linux")
+}
